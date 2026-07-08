@@ -46,16 +46,23 @@ def serialize_animal(animal_obj):
     return output
 
 
+animal_name = input("Enter a name of an animal: ").strip()
+
+if not animal_name:
+    print(" Please enter an animal name!")
+    exit()
 
 html_content = read_html("animals_template.html")
-animals_data = load_data_from_api('fox')
+animals_data = load_data_from_api(animal_name)
 
-output = ''
-for animal_obj in animals_data:
-    output += serialize_animal(animal_obj)
+if animals_data:
+    output = ''
+    for animal_obj in animals_data:
+        output += serialize_animal(animal_obj)
 
-final_html = html_content.replace("__REPLACE_ANIMALS_INFO__", output)
+    final_html = html_content.replace("__REPLACE_ANIMALS_INFO__", output)
 
-write_html("animals.html", final_html)
-
-print("✅ added successfully animals.html ")
+    write_html("animals.html", final_html)
+    print("Website was successfully generated to the file animals.html.")
+else:
+    print(f" No animals found with name '{animal_name}'")
