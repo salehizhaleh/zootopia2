@@ -14,7 +14,7 @@ def load_data_from_api(animal_name):
     if response.status_code == 200:
         return response.json()
     else:
-        print(f"error: {response.status_code}")
+        print(f"Error: {response.status_code}")
         return []
 
 
@@ -46,10 +46,20 @@ def serialize_animal(animal_obj):
     return output
 
 
+def create_error_message(animal_name):
+    error_html = f'''
+    <div class="error-message">
+        <h2>The animal "{animal_name}" does not exist.</h2>
+        <p>Please try searching for a different animal.</p>
+    </div>
+    '''
+    return error_html
+
+
 animal_name = input("Enter a name of an animal: ").strip()
 
 if not animal_name:
-    print(" Please enter an animal name!")
+    print("Error: Please enter an animal name!")
     exit()
 
 html_content = read_html("animals_template.html")
@@ -59,10 +69,12 @@ if animals_data:
     output = ''
     for animal_obj in animals_data:
         output += serialize_animal(animal_obj)
-
-    final_html = html_content.replace("__REPLACE_ANIMALS_INFO__", output)
-
-    write_html("animals.html", final_html)
-    print("Website was successfully generated to the file animals.html.")
+    print(f"Found {len(animals_data)} animal(s)")
 else:
-    print(f" No animals found with name '{animal_name}'")
+    output = create_error_message(animal_name)
+    print(f"No animals found with name '{animal_name}'")
+
+final_html = html_content.replace("__REPLACE_ANIMALS_INFO__", output)
+
+write_html("animals.html", final_html)
+print("Website was successfully generated to the file animals.html.")
